@@ -294,7 +294,7 @@ class GroupChannel extends BaseChannel {
         ),
       );
     } catch (exception) {
-      logger.e(StackTrace.current, exception);
+      logger.e('Exception occurred', error: exception, stackTrace: StackTrace.current);
       throw (SBError(message: "Pin Create Request Failed."));
     }
   }
@@ -318,7 +318,7 @@ class GroupChannel extends BaseChannel {
         ),
       );
     } catch (exception) {
-      logger.e(StackTrace.current, exception);
+      logger.e('Exception occurred', error: exception, stackTrace: StackTrace.current);
       throw (SBError(message: "Pin Delete Request Failed.."));
     }
   }
