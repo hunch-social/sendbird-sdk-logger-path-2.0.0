@@ -442,7 +442,8 @@ class SendbirdSdkInternal with WidgetsBindingObserver {
               controller.pause(),
             },
             onListen: (subscription) {
-              subscription.onData((data) {
+              subscription.onData((results) {
+                final data = _primaryConnection(results);
                 switch (data) {
                   case ConnectivityResult.none:
                     logger.i('connection has been lost');
@@ -486,6 +487,26 @@ class SendbirdSdkInternal with WidgetsBindingObserver {
             },
           );
     }
+  }
+
+  /// connectivity_plus >=6 reports every active interface as a list (e.g.
+  /// wifi + vpn); 4.x reported a single result. Collapse the list back to the
+  /// one result 4.x would have reported so the reconnect logic above is
+  /// unchanged. An empty list or only `none` means offline.
+  static ConnectivityResult _primaryConnection(
+      List<ConnectivityResult> results) {
+    const priority = <ConnectivityResult>[
+      ConnectivityResult.wifi,
+      ConnectivityResult.ethernet,
+      ConnectivityResult.mobile,
+      ConnectivityResult.vpn,
+      ConnectivityResult.bluetooth,
+      ConnectivityResult.other,
+    ];
+    for (final result in priority) {
+      if (results.contains(result)) return result;
+    }
+    return ConnectivityResult.none;
   }
 
   String _getDefaultApiHost() {
